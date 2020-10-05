@@ -1,16 +1,28 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
+using Gifter.Repositories;
+using Gifter.Models;
 
 namespace Gifter.Controllers
 {
-    public class UserProfileController : Controller
+    [Route("api/[controller]")]
+    [ApiController]
+    public class UserProfileController : ControllerBase
     {
-        public IActionResult Index()
+        private readonly IUserProfileRepository _userProfileRepository;
+
+        public UserProfileController(IUserProfileRepository userProfileRepository)
         {
-            return View();
+            _userProfileRepository = userProfileRepository;
         }
+
+
+        [HttpGet("{id}")]
+        public IActionResult Get(int id)
+        {
+            return Ok(_userProfileRepository.GetUserProfileById(id));
+        }
+
+
     }
 }
