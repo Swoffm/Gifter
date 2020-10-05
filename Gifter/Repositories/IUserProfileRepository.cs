@@ -12,10 +12,10 @@ namespace Gifter.Repositories
 
         public List<UserProfile> GetAllUserProfile();
 
-        public void DeleteUserProfile();
-        public void UpdateUserProfile();
+        public void DeleteUserProfile(int id);
+        public void UpdateUserProfile(UserProfile profile);
 
-        public void AddUserProfile();
+        public void AddUserProfile(UserProfile profile);
 
 
     }

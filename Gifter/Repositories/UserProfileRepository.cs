@@ -57,15 +57,34 @@ FROM UserProfile WHERE id = @id";
                 conn.Open();
                 using (var cmd = conn.CreateCommand())
                 {
-                    cmd.CommandText = "";
+                    cmd.CommandText = "SELECT id, Name, email, imageUrl, Bio, DateCreated FROM UserProfile";
+
+                    var myList = new List<UserProfile>();
+                    var reader = cmd.ExecuteReader();
+                    while(reader.Read())
+                    {
+                        myList.Add(new UserProfile
+                        {
+                            Id = DbUtils.GetInt(reader, "id"),
+                            Name = DbUtils.GetString(reader, "Name"),
+                            Email = DbUtils.GetString(reader, "email"),
+                            ImageUrl = DbUtils.GetString(reader, "imageUrl"),
+                            DateCreated = DbUtils.GetDateTime(reader, "dateCreated")
+
+                        });
+                    }
+
+                    reader.Close();
+                    return myList;
                 }
-                var myList = new List<UserProfile>();
-                return myList;
+
+               
+               
             }
 
         }
 
-        public void DeleteUserProfile()
+        public void DeleteUserProfile(int id)
         {
 
             using (var conn = Connection)
@@ -73,6 +92,9 @@ FROM UserProfile WHERE id = @id";
                 conn.Open();
                 using (var cmd = conn.CreateCommand())
                 {
+                    cmd.CommandText = @"DELETE FROM Userprofile WHERE Id = @id";
+                    DbUtils.AddParameter(cmd, "@id", id);
+                    cmd.ExecuteNonQuery();
 
                 }
             }
@@ -82,7 +104,7 @@ FROM UserProfile WHERE id = @id";
         }
 
 
-        public void UpdateUserProfile()
+        public void UpdateUserProfile(UserProfile profile)
         {
 
             using (var conn = Connection)
@@ -90,14 +112,22 @@ FROM UserProfile WHERE id = @id";
                 conn.Open();
                 using (var cmd = conn.CreateCommand())
                 {
+                    cmd.CommandText = @"UPDATE UserProfile SET Name = @Name, email = @email, imageUrl = @ImageUrl, datecreated = @datecreated WHERE id = @id";
 
+                    DbUtils.AddParameter(cmd, profile.Name, "@name");
+                    DbUtils.AddParameter(cmd, "@Id", profile.Id);
+                    DbUtils.AddParameter(cmd, "@datecreated", profile.DateCreated);
+                    DbUtils.AddParameter(cmd, profile.Email, "@Email");
+                    DbUtils.AddParameter(cmd, profile.ImageUrl, "@ImageUrl");
+
+                    cmd.ExecuteNonQuery();
                 }
             }
 
 
         }
 
-        public void AddUserProfile()
+        public void AddUserProfile(UserProfile profile)
         {
 
 
@@ -106,7 +136,14 @@ FROM UserProfile WHERE id = @id";
                 conn.Open();
                 using (var cmd = conn.CreateCommand())
                 {
+                    cmd.CommandText = @"INSERT INTO UserProfile (id, Name, email, imageUrl, DateCreated) OUTPUT INSERTED.ID VALUES (@Name, @email, @imageUrl, @DateCreated)";
 
+                    DbUtils.AddParameter(cmd, profile.Name, "@name");
+                    DbUtils.AddParameter(cmd, "@datecreated", profile.DateCreated);
+                    DbUtils.AddParameter(cmd, profile.Email, "@Email");
+                    DbUtils.AddParameter(cmd, profile.ImageUrl, "@ImageUrl");
+
+                    profile.Id = (int)cmd.ExecuteScalar();
                 }
             }
 
