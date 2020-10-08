@@ -21,18 +21,11 @@ export const PostProvider = (props) => {
             },
             body: JSON.stringify(post),
         });
-    };
+    }; 
 
-    return ( <
-        PostContext.Provider value = {
-            {
-                posts,
-                getAllPosts,
-                addPost
-            }
-        } > {
-            props.children
-        } <
-        /PostContext.Provider>
+    return (
+        <PostContext.Provider value={{ posts, getAllPosts, addPost }}>
+            {props.children}
+        </PostContext.Provider>
     );
 };
